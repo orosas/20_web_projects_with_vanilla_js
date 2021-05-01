@@ -21,14 +21,69 @@ function showSuccess(input) {
 
 
 // Check email is valid
-function isValidEmail(email) {
+function checkEmail(input) {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
+  if (re.test(input.value.trim())) {
+    showSuccess(input);
+  } else {
+    showError(input, 'Email is not valid');
+  }
 }
+
+// Check required fields
+function checkRequired(inputArr) {
+  inputArr.forEach(input => {
+    // console.log(input.value);
+    if (input.value.trim() === '') {
+      showError(input, `${getFieldName(input)} Field required`);
+    } else {
+      showSuccess(input);
+    }
+  });
+}
+
+// Check input length
+function checkLength(input, min, max) {
+  if (input.value.length < min) {
+    showError(input, `${getFieldName(input)} must be at least ${min} characters`);
+  } else if (input.value.length > max) {
+    showError(input, `${getFieldName(input)} must be less than ${max} characters`);
+  } else {
+    showSuccess(input);
+  }
+}
+
+// Check passwords match
+function checkPasswordsMatch(input1, input2) {
+  if (input1.value !== input2.value) {
+    showError(input2, 'Passwords do not match');
+  }
+}
+
+
+// Get field name
+function getFieldName(input) {
+  // Nota: Se extrae el primer caracter y se convierte a mayúscula
+  // y se concatena con el resto de la palabra a la cual se le elimina el primer char
+  return input.id.charAt(0).toUpperCase() + input.id.slice(1);
+}
+
+
 
 // Event listeners
 form.addEventListener('submit', function (e) {
   e.preventDefault();
+
+  // Nota: Se pasa un array con todos los campos de la form a validar
+  checkRequired([username, email, password, password2]);
+  // Nota: Se valida el campo con las opciones (campoInput, longMin, longMax)
+  checkLength(username, 3, 15);
+  checkLength(password, 6, 25);
+  checkEmail(email);
+  checkPasswordsMatch(password, password2);
+
+  /* 
+  // Nota: Validaciones sin refactor, usando if
 
   // Nota: Valida campo username
   if (username.value === '') {
@@ -59,4 +114,6 @@ form.addEventListener('submit', function (e) {
   } else {
     showSuccess(password2);
   }
+  */
+
 })
